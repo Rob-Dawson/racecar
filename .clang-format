@@ -12,17 +12,19 @@ DerivePointerAlignment: false
 ReferenceAlignment: Pointer
 AlignAfterOpenBracket: Align
 AlignOperands: Align
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
-AlignConsecutiveMacros: false
-AlignTrailingComments: true
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignConsecutiveMacros: None
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
 AllowShortBlocksOnASingleLine: Never
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AllowShortLambdasOnASingleLine: All
 BinPackArguments: true
-BinPackParameters: true
+BinPackParameters: BinPack
 BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
@@ -35,8 +37,10 @@ IndentPPDirectives: None
 InsertTrailingCommas: None
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
-ReflowComments: true
-SortIncludes: CaseSensitive
+ReflowComments: Always
+SortIncludes:
+  Enabled: true
+  IgnoreCase: false
 SpaceBeforeParens: ControlStatements
 SpacesInAngles: Never
 SpacesInParens: Never
