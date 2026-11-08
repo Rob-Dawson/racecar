@@ -1,0 +1,47 @@
+
+controller_manager:
+  ros__parameters:
+    update_rate: 100
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    ackermann_steering_controller:
+      type: ackermann_steering_controller/AckermannSteeringController
+
+
+ackermann_steering_controller:
+  ros__parameters:
+
+    # Rear-wheel traction (right, then left)
+    traction_joints_names:
+      - right_rear_wheel_joint
+      - left_rear_wheel_joint
+
+    # Front-wheel steering (right, then left)
+    steering_joints_names:
+      - right_steering_hinge_joint
+      - left_steering_hinge_joint
+
+    # Vehicle geometry (metres)
+    # TODO: verify these values against the URDF
+    wheelbase: 0.325
+    traction_track_width: 0.20
+    steering_track_width: 0.20
+    traction_wheels_radius: 0.05
+
+    # Odometry feedback
+    position_feedback: true
+    open_loop: false
+
+    # Odometry frames
+    base_frame_id: base_link
+    odom_frame_id: odom
+    enable_odom_tf: true
+
+    # Safety and behaviour
+    # reference_timeout: 0.5
+    reduce_wheel_speed_until_steering_reached: true
+
+    # Odometry smoothing
+    velocity_rolling_window_size: 10
