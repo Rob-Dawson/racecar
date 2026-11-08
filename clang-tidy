@@ -1,0 +1,16 @@
+Checks: >
+  bugprone-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -modernize-use-trailing-return-type,
+  -readability-uppercase-literal-suffix,
+  -readability-identifier-length,
+  -modernize-use-nodiscard
+
+WarningsAsErrors: ""
+# Match C++ headers in any ROS 2 package under racecar_ws/src.
+HeaderFilterRegex: '.*/src/[^/]+/(src|include)/.*'
+ExcludeHeaderFilterRegex: '.*/(build|install|log)/.*'
+SystemHeaders: false
+FormatStyle: file
