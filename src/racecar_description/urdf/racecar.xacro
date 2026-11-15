@@ -167,6 +167,41 @@
     <limit effort="10" velocity="100"/>
   </joint>
 
+	<!-- ********** IMU LINK ********** -->
+	<link name="imu_link">
+
+		<inertial>
+			<origin xyz="-0.0 0.0 0.0" rpy="0 0 0" />
+			<mass value="0.05" />
+			<inertia
+				ixx="4.06e-06" ixy="0.0" ixz="0.0"
+				iyy="1.21e-06" iyz="0.0"
+				izz="5.21e-06" />
+		</inertial>
+
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.01684 0.03111 0.00254" />
+			</geometry>
+		</visual>
+
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.01684 0.03111 0.00254" />
+			</geometry>
+		</collision>
+
+	</link>
+
+	<joint name="imu_joint" type="fixed">
+		<parent link="chassis" />
+		<child link="imu_link" />
+		<origin xyz="0.0 0.0 0.015" rpy="0.0 0.0 0.0" />
+		<axis xyz="0 0 0" />
+	</joint>
+
 
   <!-- Add Hokuyo laser scanner -->
 
