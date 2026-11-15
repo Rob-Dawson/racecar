@@ -14,7 +14,7 @@ def generate_launch_description():
 
     racecar_bringup_dir = FindPackageShare("racecar_bringup")
     racecar_control_dir = FindPackageShare("racecar_control")
-
+    racecar_localisation_dir = FindPackageShare("racecar_localisation")
     environment_arg = DeclareLaunchArgument(
         "environment",
         default_value="gazebo",
@@ -58,9 +58,19 @@ def generate_launch_description():
 
     racecar_control = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            PathJoinSubstitution([racecar_control_dir, "launch", "racecar_control.launch.py"])
+            PathJoinSubstitution(
+                [racecar_control_dir, "launch", "racecar_control.launch.py"]
+            )
         ),
         condition=is_gazebo,
+    )
+
+    racecar_localisation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [racecar_localisation_dir, "launch", "racecar_localisation.launch.py"]
+            )
+        )
     )
 
     ld = LaunchDescription()

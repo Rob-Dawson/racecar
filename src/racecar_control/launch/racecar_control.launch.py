@@ -39,7 +39,6 @@ def generate_launch_description():
         ],
         output="screen",
     )
-
     ld = LaunchDescription()
 
     ld.add_action(controller_manager_arg)
