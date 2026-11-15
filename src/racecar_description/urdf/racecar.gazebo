@@ -1,8 +1,45 @@
 <?xml version="1.0"?>
 <robot name="racecar" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+      <xacro:macro name="imu_linear_noise">
+        <mean>${imu_linear_mean}</mean>
+        <stddev>${imu_linear_stddev}</stddev>
+        <bias_mean>${imu_linear_bias_mean}</bias_mean>
+        <bias_stddev>${imu_linear_bias_stddev}</bias_stddev>
+        <dynamic_bias_stddev>${imu_linear_dynamic_bias_stddev}</dynamic_bias_stddev>
+        <dynamic_bias_correlation_time>${imu_linear_dynamic_bias_correlation_time}</dynamic_bias_correlation_time>
+    </xacro:macro>
+
+    <xacro:macro name="imu_angular_noise">
+        <mean>${imu_angular_mean}</mean>
+        <stddev>${imu_angular_stddev}</stddev>
+        <bias_mean>${imu_angular_bias_mean}</bias_mean>
+        <bias_stddev>${imu_angular_bias_stddev}</bias_stddev>
+        <dynamic_bias_stddev>${imu_angular_dynamic_bias_stddev}</dynamic_bias_stddev>
+        <dynamic_bias_correlation_time>${imu_angular_dynamic_bias_correlation_time}</dynamic_bias_correlation_time>
+    </xacro:macro>
+
+  <xacro:property name="imu_angular_mean" value="0.0" />
+    <xacro:property name="imu_angular_stddev" value="0.00262" />
+    <xacro:property name="imu_angular_bias_mean" value="0.00" />
+    <xacro:property name="imu_angular_bias_stddev" value="0.0087" />
+    <xacro:property name="imu_angular_dynamic_bias_stddev" value="1.0e-6" />
+    <xacro:property name="imu_angular_dynamic_bias_correlation_time" value="600" />
+
+    <xacro:property name="imu_linear_mean" value="0.0" />
+    <xacro:property name="imu_linear_stddev" value="0.0226" />
+    <xacro:property name="imu_linear_bias_mean" value="0.00" />
+    <xacro:property name="imu_linear_bias_stddev" value="0.147" />
+    <xacro:property name="imu_linear_dynamic_bias_stddev" value="2.0e-3" />
+    <xacro:property name="imu_linear_dynamic_bias_correlation_time" value="600" />
+
+
+
   <!-- Contact properties for the initial low-speed simulation.
        These are starting values, not calibrated tire parameters. -->
+
+
+
 
   <gazebo reference="chassis">
     <mu1>0.8</mu1>
@@ -33,6 +70,52 @@
     <mu2>1.0</mu2>
     <material>Gazebo/Black</material>
   </gazebo>
+
+  <gazebo reference="imu_link">
+        <sensor name="imu" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate>
+            <gz_frame_id>imu_link</gz_frame_id>
+            <topic>imu</topic>
+            <imu>
+                <angular_velocity>
+                    <x>
+                        <noise type="gaussian">
+                            <xacro:imu_angular_noise/>
+                        </noise>
+                    </x>
+                    <y>
+                        <noise type="gaussian">
+                            <xacro:imu_angular_noise/>
+                        </noise>
+                    </y>
+                    <z>
+                        <noise type="gaussian">
+                            <xacro:imu_angular_noise/>
+                        </noise>
+                    </z>
+                </angular_velocity>
+                <linear_acceleration>
+                    <x>
+                        <noise type="gaussian">
+                            <xacro:imu_linear_noise/>
+                        </noise>
+                    </x>
+                    <y>
+                        <noise type="gaussian">
+                            <xacro:imu_linear_noise/>
+                        </noise>
+                    </y>
+                    <z>
+                        <noise type="gaussian">
+                            <xacro:imu_linear_noise/>
+                        </noise>
+                    </z>
+                </linear_acceleration>
+            </imu>
+            <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu" />
+        </sensor>
+    </gazebo>
 
   <!-- ROS 2 Jazzy / Gazebo Harmonic controller manager. -->
   <gazebo>
