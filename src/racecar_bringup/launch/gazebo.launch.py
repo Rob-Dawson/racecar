@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    ExecuteProcess,
     IncludeLaunchDescription,
     SetEnvironmentVariable,
 )
@@ -16,7 +17,9 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     racecar_gazebo_dir = FindPackageShare("racecar_gazebo")
-    default_world = PathJoinSubstitution([racecar_gazebo_dir, "worlds", "empty.sdf"])
+    default_world = PathJoinSubstitution(
+        [racecar_gazebo_dir, "worlds", "warehouse.sdf"]
+    )
     racecar_gazebo_share = FindPackageShare("racecar_description")
 
     gz_resource_path = PathJoinSubstitution(
@@ -42,6 +45,52 @@ def generate_launch_description():
             "gz_args": gz_args,
             "on_exit_shutdown": "true",
         }.items(),
+    )
+    camera_pose = """
+    pose {
+      position {
+        x: -0.87632280588150024
+        y: 0.082298040390014648
+        z: 1.0596097707748413
+      }
+      orientation {
+        x: 0
+        y: 0.24740396440029144
+        z: 0
+        w: 0.96891242265701294
+      }
+    }
+    """
+
+    camera_command = (
+        "for attempt in $(seq 1 60); do "
+        "if gz service -l | grep -Fxq '/gui/move_to/pose'; then "
+        "break; "
+        "fi; "
+        "sleep 0.5; "
+        "done; "
+        "if ! gz service -l | grep -Fxq '/gui/move_to/pose'; then "
+        "echo 'Gazebo camera service unavailable'; "
+        "exit 1; "
+        "fi; "
+        "for attempt in $(seq 1 5); do "
+        "if gz service -s /gui/move_to/pose "
+        "--reqtype gz.msgs.GUICamera "
+        "--reptype gz.msgs.Boolean "
+        "--timeout 5000 "
+        f"--req '{camera_pose}' | grep -q 'data: true'; then "
+        "echo 'Gazebo camera positioned successfully'; "
+        "exit 0; "
+        "fi; "
+        "sleep 1; "
+        "done; "
+        "echo 'Failed to position Gazebo camera'; "
+        "exit 1"
+    )
+
+    set_camera = ExecuteProcess(
+        cmd=["bash", "-c", camera_command],
+        output="screen",
     )
 
     spawn_entity = Node(
@@ -77,6 +126,7 @@ def generate_launch_description():
     ld.add_action(world_arg)
     ld.add_action(gazebo_resource_path)
     ld.add_action(gazebo)
+    ld.add_action(set_camera)
     ld.add_action(spawn_entity)
     ld.add_action(ros_gz_bridge)
 
