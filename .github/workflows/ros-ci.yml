@@ -1,18 +1,22 @@
-name: Validate Xacro
+name: ROS 2 Build and Test
 
 on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  validate-xacro:
+  build:
+    name: ROS 2 Jazzy
     runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up ROS 2 Jazzy
+      - name: Setup ROS 2 Jazzy
         uses: ros-tooling/setup-ros@v0.7
         with:
           required-ros-distributions: jazzy
@@ -31,18 +35,19 @@ jobs:
           sudo rosdep init || true
           rosdep update
           rosdep install \
-            --from-paths . \
+            --from-paths src \
             --ignore-src \
             --rosdistro jazzy \
             -y
 
       - name: Build ROS workspace
+        shell: bash
         run: |
           source /opt/ros/jazzy/setup.bash
           colcon build --symlink-install
-        shell: bash
 
       - name: Validate Xacro
+        shell: bash
         run: |
           set -eo pipefail
 
@@ -51,14 +56,17 @@ jobs:
 
           set -u
 
-          echo "Generating racecar URDF..."
-
           xacro \
             src/racecar_description/urdf/racecar.xacro \
             -o /tmp/racecar.urdf
 
-          echo "Validating generated URDF..."
-
           check_urdf /tmp/racecar.urdf
 
-          echo "Xacro and URDF validation passed!"
+      - name: Run ROS tests
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          source install/setup.bash
+
+          colcon test
+          colcon test-result --verbose
