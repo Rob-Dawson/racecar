@@ -1,0 +1,173 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    name: Python - Ruff
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Ruff
+        uses: astral-sh/ruff-action@v3
+
+      - name: Check Python linting
+        run: ruff check .
+
+      - name: Check Python formatting
+        run: ruff format --check .
+
+  cpp-format:
+    name: C++ - clang-format
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-18
+
+      - name: Check C++ formatting
+        shell: bash
+        run: |
+          mapfile -d '' files < <(
+            find src -type f \
+              \( -name '*.cpp' -o -name '*.hpp' \
+                 -o -name '*.cc' -o -name '*.h' \) \
+              -print0
+          )
+
+          if (( ${#files[@]} == 0 )); then
+            echo "No C++ files found."
+            exit 0
+          fi
+
+          clang-format-18 --dry-run --Werror "${files[@]}"
+
+  cpp-tidy:
+    name: C++ - clang-tidy
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup ROS 2 Jazzy
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: jazzy
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-colcon-common-extensions \
+            python3-rosdep \
+            clang-tidy-18
+
+          sudo rosdep init || true
+          rosdep update
+
+          rosdep install \
+            --from-paths src \
+            --ignore-src \
+            --rosdistro jazzy \
+            -y
+
+      - name: Generate compilation databases
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          source /opt/ros/jazzy/setup.bash
+
+          colcon build \
+            --cmake-args \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run clang-tidy
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          source /opt/ros/jazzy/setup.bash
+          source install/setup.bash
+
+          found=0
+
+          while IFS= read -r -d '' database; do
+            build_dir=$(dirname "$database")
+
+            echo "Checking package: $build_dir"
+
+            mapfile -t files < <(
+              python3 - "$database" "$GITHUB_WORKSPACE/src" <<'PY'
+          import json
+          import os
+          import sys
+
+          database, source_root = sys.argv[1:]
+          source_root = os.path.realpath(source_root)
+
+          with open(database, encoding="utf-8") as f:
+              commands = json.load(f)
+
+          files = set()
+
+          for command in commands:
+              path = command["file"]
+
+              if not os.path.isabs(path):
+                  path = os.path.join(command["directory"], path)
+
+              path = os.path.realpath(path)
+
+              if (
+                  path.startswith(source_root + os.sep)
+                  and path.endswith((".cpp", ".cc", ".cxx"))
+              ):
+                  files.add(path)
+
+          for path in sorted(files):
+              print(path)
+          PY
+            )
+
+            if (( ${#files[@]} > 0 )); then
+              found=1
+              clang-tidy-18 \
+                -p "$build_dir" \
+                --warnings-as-errors='*' \
+                "${files[@]}"
+            fi
+
+          done < <(find build -name compile_commands.json -print0)
+
+          if (( found == 0 )); then
+            echo "No compiled C++ source files found."
+          fi
+
+  yaml:
+    name: YAML - yamllint
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yamllint
+
+      - name: Check YAML
+        run: yamllint src/
