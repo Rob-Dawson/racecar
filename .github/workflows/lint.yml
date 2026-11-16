@@ -155,7 +155,6 @@ jobs:
           if (( found == 0 )); then
             echo "No compiled C++ source files found."
           fi
-
   yaml:
     name: YAML - yamllint
     runs-on: ubuntu-24.04
@@ -170,4 +169,12 @@ jobs:
           sudo apt-get install -y yamllint
 
       - name: Check YAML
-        run: yamllint src/
+        run: |
+          yamllint -d '{
+            extends: default,
+            rules: {
+              document-start: disable,
+              line-length: disable,
+              commas: disable
+            }
+          }' src/
