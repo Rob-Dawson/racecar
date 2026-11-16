@@ -14,9 +14,7 @@ def generate_launch_description():
 
     slam_config_arg = DeclareLaunchArgument(
         "slam_config",
-        default_value=PathJoinSubstitution(
-            [mapping_dir, "config", "slam_toolbox.yaml"]
-        ),
+        default_value=PathJoinSubstitution([mapping_dir, "config", "slam_toolbox.yaml"]),
     )
 
     slam_config = LaunchConfiguration("slam_config")

@@ -26,9 +26,7 @@ def generate_launch_description():
     # Process the URDF file
     racecar_description_dir = FindPackageShare("racecar_description")
 
-    xacro_file = PathJoinSubstitution(
-        [racecar_description_dir, "urdf", "racecar.xacro"]
-    )
+    xacro_file = PathJoinSubstitution([racecar_description_dir, "urdf", "racecar.xacro"])
     robot_description_config = Command(
         [
             "xacro ",

@@ -1,0 +1,11 @@
+# ROS 2 generated directories
+build/
+install/
+log/
+
+# Python cache
+.pytest_cache/
+__pycache__/
+
+# Preserve manually aligned EKF covariance matrices
+../src/racecar_localisation/config/ekf.yaml

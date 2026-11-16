@@ -1,28 +1,6 @@
 # Repository-wide Python tooling for ROS 2 launch files, scripts, and tests.
 # ROS 2 packages are built with colcon/ament, not Hatch.
 
-[tool.ruff]
-target-version = "py310"
-line-length = 100
-include = ["*.py", "*.pyi"]
-exclude = [
-    ".git",
-    "build",
-    "install",
-    "log",
-    ".venv",
-]
-
-[tool.ruff.lint]
-select = [
-    "E4",  # Import and whitespace errors
-    "E7",  # Statement errors
-    "E9",  # Syntax errors
-    "F",   # Pyflakes
-    "I",   # Import ordering
-    "B",   # Common bug patterns
-    "UP",  # Modern Python syntax
-]
 
 [tool.pytest.ini_options]
 addopts = "-ra"

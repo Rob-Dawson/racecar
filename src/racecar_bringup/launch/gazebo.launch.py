@@ -17,9 +17,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     racecar_gazebo_dir = FindPackageShare("racecar_gazebo")
-    default_world = PathJoinSubstitution(
-        [racecar_gazebo_dir, "worlds", "warehouse.sdf"]
-    )
+    default_world = PathJoinSubstitution([racecar_gazebo_dir, "worlds", "warehouse.sdf"])
     racecar_gazebo_share = FindPackageShare("racecar_description")
 
     gz_resource_path = PathJoinSubstitution(
@@ -37,9 +35,7 @@ def generate_launch_description():
     gz_args = ["-r -v 4 ", world]
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            PathJoinSubstitution(
-                [FindPackageShare("ros_gz_sim"), "launch", "gz_sim.launch.py"]
-            )
+            PathJoinSubstitution([FindPackageShare("ros_gz_sim"), "launch", "gz_sim.launch.py"])
         ),
         launch_arguments={
             "gz_args": gz_args,

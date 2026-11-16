@@ -1,4 +1,3 @@
-
 controller_manager:
   ros__parameters:
     update_rate: 100
@@ -9,10 +8,8 @@ controller_manager:
     ackermann_steering_controller:
       type: ackermann_steering_controller/AckermannSteeringController
 
-
 ackermann_steering_controller:
   ros__parameters:
-
     # Rear-wheel traction (right, then left)
     traction_joints_names:
       - right_rear_wheel_joint

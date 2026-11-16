@@ -37,9 +37,7 @@ def generate_launch_description():
     # Environment conditions
     is_gazebo = IfCondition(PythonExpression(["'", environment, "' == 'gazebo'"]))
 
-    sim_mode = PythonExpression(
-        ["'true' if '", environment, "' == 'gazebo' else 'false'"]
-    )
+    sim_mode = PythonExpression(["'true' if '", environment, "' == 'gazebo' else 'false'"])
 
     # Robot description
     rsp = IncludeLaunchDescription(
@@ -74,9 +72,7 @@ def generate_launch_description():
     # Robot control
     racecar_control = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            PathJoinSubstitution(
-                [racecar_control_dir, "launch", "racecar_control.launch.py"]
-            )
+            PathJoinSubstitution([racecar_control_dir, "launch", "racecar_control.launch.py"])
         ),
         condition=is_gazebo,
     )
@@ -93,9 +89,7 @@ def generate_launch_description():
     # SLAM mapping
     racecar_mapping = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            PathJoinSubstitution(
-                [racecar_mapping_dir, "launch", "racecar_mapping.launch.py"]
-            )
+            PathJoinSubstitution([racecar_mapping_dir, "launch", "racecar_mapping.launch.py"])
         )
     )
 
