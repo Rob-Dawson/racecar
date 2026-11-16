@@ -73,14 +73,13 @@ jobs:
         run: |
           yamllint -d '{
             extends: default,
+            ignore: "src/racecar_localisation/config/ekf.yaml",
             rules: {
               document-start: disable,
               line-length: disable,
               commas: disable
             }
-          }' \
-          --ignore src/racecar_localisation/config/ekf.yaml \
-          src/
+          }' src/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
