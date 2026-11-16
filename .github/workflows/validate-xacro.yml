@@ -43,12 +43,13 @@ jobs:
         shell: bash
 
       - name: Validate Xacro
-        shell: bash
         run: |
-          set -euo pipefail
+          set -eo pipefail
 
           source /opt/ros/jazzy/setup.bash
           source install/setup.bash
+
+          set -u
 
           echo "Generating racecar URDF..."
 
