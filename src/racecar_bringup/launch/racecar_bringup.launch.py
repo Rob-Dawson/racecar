@@ -7,33 +7,41 @@ from launch.substitutions import (
     PathJoinSubstitution,
     PythonExpression,
 )
+from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-
+    # Package directories
     racecar_bringup_dir = FindPackageShare("racecar_bringup")
     racecar_control_dir = FindPackageShare("racecar_control")
     racecar_localisation_dir = FindPackageShare("racecar_localisation")
+    racecar_mapping_dir = FindPackageShare("racecar_mapping")
+
+    # Launch arguments
     environment_arg = DeclareLaunchArgument(
         "environment",
         default_value="gazebo",
-        # choices=["gazebo", "isaacsim", "realrobot"],
         description="Select the execution environment",
     )
-    environment = LaunchConfiguration("environment")
-    sim_mode = PythonExpression(
-        [
-            "'true' if '",
-            environment,
-            "' == 'gazebo' else 'false'",
-        ]
-        # [
-        #     "'true' if '",
-        #     environment,
-        #     "' in ['gazebo', 'isaacsim'] else 'false'",
-        # ]
+
+    use_rviz_arg = DeclareLaunchArgument(
+        "use_rviz",
+        default_value="true",
+        description="Launch RViz2",
     )
+
+    environment = LaunchConfiguration("environment")
+    use_rviz = LaunchConfiguration("use_rviz")
+
+    # Environment conditions
+    is_gazebo = IfCondition(PythonExpression(["'", environment, "' == 'gazebo'"]))
+
+    sim_mode = PythonExpression(
+        ["'true' if '", environment, "' == 'gazebo' else 'false'"]
+    )
+
+    # Robot description
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([racecar_bringup_dir, "launch", "rsp.launch.py"])
@@ -43,12 +51,7 @@ def generate_launch_description():
         }.items(),
     )
 
-    is_gazebo = IfCondition(PythonExpression(["'", environment, "' == 'gazebo'"]))
-    ###
-    # This is here ready for when the real robot or issac sim are implemented
-    # is_issacsim = IfCondition(PythonExpression(["'", environment, "' == 'issacsim'"]))
-    # is_realrobot = IfCondition(PythonExpression(["'", environment, "' == 'realrobot'"]))
-    ###
+    # Gazebo simulation
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([racecar_bringup_dir, "launch", "gazebo.launch.py"])
@@ -56,6 +59,19 @@ def generate_launch_description():
         condition=is_gazebo,
     )
 
+    # RViz visualisation
+    rviz_config = PathJoinSubstitution([racecar_bringup_dir, "rviz", "display.rviz"])
+
+    rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        arguments=["-d", rviz_config],
+        output="screen",
+        condition=IfCondition(use_rviz),
+    )
+
+    # Robot control
     racecar_control = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
@@ -65,6 +81,7 @@ def generate_launch_description():
         condition=is_gazebo,
     )
 
+    # Robot localisation
     racecar_localisation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
@@ -73,10 +90,29 @@ def generate_launch_description():
         )
     )
 
+    # SLAM mapping
+    racecar_mapping = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [racecar_mapping_dir, "launch", "racecar_mapping.launch.py"]
+            )
+        )
+    )
+
+    # Launch description
     ld = LaunchDescription()
+
     ld.add_action(environment_arg)
+    ld.add_action(use_rviz_arg)
+
     ld.add_action(rsp)
+
     ld.add_action(gazebo)
+    ld.add_action(rviz)
+
     ld.add_action(racecar_control)
+    ld.add_action(racecar_localisation)
+
+    ld.add_action(racecar_mapping)
 
     return ld
