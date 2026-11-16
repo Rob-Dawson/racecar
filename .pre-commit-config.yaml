@@ -1,0 +1,39 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff - Lint
+        entry: ruff check --fix --config formatters/ruff.toml
+        language: system
+        types: [python]
+        files: ^src/
+
+      - id: ruff-format
+        name: Ruff - Format
+        entry: ruff format --config formatters/ruff.toml
+        language: system
+        types: [python]
+        files: ^src/
+
+      - id: clang-format
+        name: clang-format - C++
+        entry: clang-format-18 --style=file:formatters/.clang-format -i
+        language: system
+        types_or: [c, c++]
+        files: ^src/
+
+      - id: prettier
+        name: Prettier - YAML
+        entry: prettier --write --config formatters/.prettierrc.json --ignore-path formatters/.prettierignore
+        language: system
+        types: [yaml]
+        files: ^src/
+        exclude: ^src/racecar_localisation/config/ekf\.yaml$
+
+      - id: yamllint
+        name: yamllint - YAML
+        entry: 'yamllint -d "{extends: default, rules: {document-start: disable, line-length: disable, commas: disable}}"'
+        language: system
+        types: [yaml]
+        files: ^src/
+        exclude: ^src/racecar_localisation/config/ekf\.yaml$
