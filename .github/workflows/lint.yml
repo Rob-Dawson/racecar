@@ -73,7 +73,7 @@ jobs:
         run: |
           yamllint -d '{
             extends: default,
-            ignore: "src/racecar_localisation/config/ekf.yaml",
+            ignore: "src/racecar_state_estimation/config/ekf.yaml",
             rules: {
               document-start: disable,
               line-length: disable,
@@ -96,4 +96,4 @@ jobs:
             --ignore-path formatters/.prettierignore \
             --ignore-path .gitignore \
             "src/**/*.{yaml,yml}" \
-            "!src/racecar_localisation/config/ekf.yaml"
+            "!src/racecar_state_estimation/config/ekf.yaml"
