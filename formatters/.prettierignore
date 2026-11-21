@@ -8,4 +8,4 @@ log/
 __pycache__/
 
 # Preserve manually aligned EKF covariance matrices
-../src/racecar_localisation/config/ekf.yaml
+../src/racecar_state_estimation/config/ekf.yaml

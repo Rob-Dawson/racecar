@@ -59,7 +59,7 @@ prettier \
     --ignore-path .gitignore \
     --ignore-path .prettierignore \
     "src/**/*.{yaml,yml}" \
-    "!src/racecar_localisation/config/ekf.yaml"
+    "!src/racecar_state_estimation/config/ekf.yaml"
 
 echo ""
 echo "========================================"
