@@ -15,8 +15,9 @@ def generate_launch_description():
     # Package directories
     racecar_bringup_dir = FindPackageShare("racecar_bringup")
     racecar_control_dir = FindPackageShare("racecar_control")
-    racecar_localisation_dir = FindPackageShare("racecar_localisation")
+    racecar_state_estimation_dir = FindPackageShare("racecar_state_estimation")
     racecar_mapping_dir = FindPackageShare("racecar_mapping")
+    racecar_localisation_dir = FindPackageShare("racecar_localisation")
 
     # Launch arguments
     environment_arg = DeclareLaunchArgument(
@@ -69,7 +70,7 @@ def generate_launch_description():
         condition=IfCondition(use_rviz),
     )
 
-    # Robot control
+    # Racecar control
     racecar_control = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([racecar_control_dir, "launch", "racecar_control.launch.py"])
@@ -77,19 +78,28 @@ def generate_launch_description():
         condition=is_gazebo,
     )
 
-    # Robot localisation
-    racecar_localisation = IncludeLaunchDescription(
+    # Racecar pose estimation
+    racecar_state_estimation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
-                [racecar_localisation_dir, "launch", "racecar_localisation.launch.py"]
+                [racecar_state_estimation_dir, "launch", "racecar_state_estimation.launch.py"]
             )
         )
     )
 
     # SLAM mapping
-    racecar_mapping = IncludeLaunchDescription(
+    racecar_mapping = IncludeLaunchDescription(  # noqa: F841
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([racecar_mapping_dir, "launch", "racecar_mapping.launch.py"])
+        )
+    )
+
+    # Racecar localisation within a map
+    racecar_localisation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [racecar_localisation_dir, "launch", "racecar_localisation.launch.py"]
+            )
         )
     )
 
@@ -105,8 +115,10 @@ def generate_launch_description():
     ld.add_action(rviz)
 
     ld.add_action(racecar_control)
-    ld.add_action(racecar_localisation)
+    ld.add_action(racecar_state_estimation)
 
-    ld.add_action(racecar_mapping)
+    # ld.add_action(racecar_mapping)
+
+    ld.add_action(racecar_localisation)
 
     return ld
