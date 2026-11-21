@@ -3,12 +3,22 @@
 <package format="3">
   <name>racecar_localisation</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Map-based localisation for the autonomous racecar using Nav2 AMCL.</description>
   <maintainer email="robdawson123.rd@gmail.com">rob</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <!-- ROS 2 launch dependencies -->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
 
+  <!-- Nav2 localisation dependencies -->
+  <exec_depend>nav2_amcl</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
+
+  <!-- Map files are provided by this package -->
+  <exec_depend>racecar_mapping</exec_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
