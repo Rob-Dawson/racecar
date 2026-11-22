@@ -17,7 +17,13 @@ def generate_launch_description():
         default_value=PathJoinSubstitution([planner_dir, "config", "planner.yaml"]),
     )
 
+    global_costmap_config_arg = DeclareLaunchArgument(
+        "global_costmap_config",
+        default_value=PathJoinSubstitution([planner_dir, "config", "global_costmap.yaml"]),
+    )
+
     planner_config = LaunchConfiguration("planner_config")
+    global_costmap_config = LaunchConfiguration("global_costmap_config")
     use_sim_time = LaunchConfiguration("use_sim_time")
 
     planner_server = Node(
@@ -25,7 +31,7 @@ def generate_launch_description():
         executable="planner_server",
         name="planner_server",
         output="screen",
-        parameters=[planner_config, {"use_sim_time": use_sim_time}],
+        parameters=[planner_config, global_costmap_config, {"use_sim_time": use_sim_time}],
     )
 
     nav2_lifecycle_manager = Node(
@@ -44,6 +50,7 @@ def generate_launch_description():
 
     ld.add_action(use_sim_time_arg)
     ld.add_action(planner_config_arg)
+    ld.add_action(global_costmap_config_arg)
     ld.add_action(planner_server)
     ld.add_action(nav2_lifecycle_manager)
 
