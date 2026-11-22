@@ -52,17 +52,16 @@ Screenshots and videos demonstrating the current system to follow.
 
 ## Technologies
 
-| Robotics & Simulation | Software & Development |
-|-----------------------|------------------------|
-| ROS 2 Jazzy | C++ |
-| Gazebo Harmonic | Python |
-| Nav2 | Git |
-| ros2_control | CMake |
-| SLAM Toolbox | XML |
-| AMCL | YAML |
-| robot_localization | RViz |
-
----
+<table>
+  <tr>
+    <th colspan="2">Technologies Used</th>
+  </tr>
+  <tr><td>ROS 2 Jazzy</td><td>Gazebo Harmonic</td></tr>
+  <tr><td>Nav2</td><td>ros2_control</td></tr>
+  <tr><td>SLAM Toolbox</td><td>AMCL</td></tr>
+  <tr><td>robot_localization</td><td>Python</td></tr>
+  <tr><td>C++</td><td></td></tr>
+</table>
 
 ## ROS 2 Packages
 
