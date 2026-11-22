@@ -18,6 +18,9 @@ def generate_launch_description():
     racecar_state_estimation_dir = FindPackageShare("racecar_state_estimation")
     racecar_mapping_dir = FindPackageShare("racecar_mapping")
     racecar_localisation_dir = FindPackageShare("racecar_localisation")
+    racecar_planner_dir = FindPackageShare("racecar_planner")
+    racecar_motion_controller_dir = FindPackageShare("racecar_motion_controller")
+    racecar_navigation_dir = FindPackageShare("racecar_navigation")
 
     # Launch arguments
     environment_arg = DeclareLaunchArgument(
@@ -103,6 +106,29 @@ def generate_launch_description():
         )
     )
 
+    # Racecar motion controller for Nav2
+    racecar_navigation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([racecar_navigation_dir, "launch", "racecar_navigation.launch.py"])
+        )
+    )
+
+    # Racecar path planner
+    racecar_planner = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([racecar_planner_dir, "launch", "racecar_planner.launch.py"])
+        )
+    )
+
+    # Racecar motion controller for Nav2
+    racecar_motion_controller = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [racecar_motion_controller_dir, "launch", "racecar_motion_controller.launch.py"]
+            )
+        )
+    )
+
     # Launch description
     ld = LaunchDescription()
 
@@ -120,5 +146,9 @@ def generate_launch_description():
     # ld.add_action(racecar_mapping)
 
     ld.add_action(racecar_localisation)
+
+    ld.add_action(racecar_navigation)
+    ld.add_action(racecar_planner)
+    ld.add_action(racecar_motion_controller)
 
     return ld
