@@ -1,0 +1,66 @@
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      use_sim_time: true
+
+      # Reference frames
+      global_frame: map
+      robot_base_frame: base_link
+      transform_tolerance: 0.3
+
+      # Costmap update and publication
+      update_frequency: 2.0
+      publish_frequency: 1.0
+      always_send_full_costmap: true
+
+      # Map configuration
+      resolution: 0.05
+      track_unknown_space: true
+
+      # Robot dimensions
+      footprint: "[[0.20, 0.12], [0.20, -0.12], [-0.20, -0.12], [-0.20, 0.12]]"
+      footprint_padding: 0.02
+
+      # Costmap layers
+      plugins:
+        - static_layer
+        - obstacle_layer
+        - inflation_layer
+
+      # Saved occupancy map
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: true
+        map_topic: /map
+        subscribe_to_updates: true
+        enabled: true
+
+      # Live obstacle detection
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: true
+
+        observation_sources: scan
+
+        scan:
+          topic: /scan
+          data_type: "LaserScan"
+
+          marking: true
+          clearing: true
+
+          obstacle_min_range: 0.0
+          obstacle_max_range: 8.0
+
+          raytrace_min_range: 0.0
+          raytrace_max_range: 10.0
+
+          inf_is_valid: true
+
+      # Obstacle inflation
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        enabled: true
+
+        inflation_radius: 0.35
+        cost_scaling_factor: 3.0
